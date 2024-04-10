@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Обновленные стили */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px); /* учитываем padding и border */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        textarea {
+            height: 120px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .response {
+            margin-top: 20px;
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .about-chatgpt {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .development-info {
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        /* Стили для панели навигации */
+        .navbar {
+            background-color: #007bff;
+            padding: 10px 0;
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .navbar ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        .navbar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: #cceeff;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <ul>
+        <li><a href="#home">Главная</a></li>
+        <li><a href="https://github.com/Woooda" target="_blank">Контакты</a></li>
+    </ul>
+</div>
+
+<div class="container">
+    <h1>Привет, добро пожаловать в ChatGPT!</h1>
+    <p>Введите свое имя и ваш запрос ниже, и мы ответим вам в ближайшее время.</p>
+    <form id="chatForm" method="post">
+        <label for="user_name">Имя отправителя:</label>
+        <input type="text" id="user_name" name="user_name" required>
+        <label for="user_query">Ваш запрос:</label>
+        <textarea id="user_query" name="user_query" required></textarea>
+        <button type="submit">Отправить</button>
+    </form>
+    <div class="response" id="response"></div>
+    <div class="about-chatgpt">
+        <h2>О ChatGPT</h2>
+        <p>ChatGPT - это мощная модель искусственного интеллекта, созданная OpenAI. Она способна генерировать человекоподобные ответы на различные запросы и вопросы, обучаясь на огромном объеме текстовых данных.</p>
+        <p>С помощью этого веб-приложения, вы можете взаимодействовать с ChatGPT прямо здесь, отправляя свои вопросы и получая ответы в реальном времени.</p>
+    </div>
+    <div class="development-info">
+        <p>Данное веб-приложение разработано на основе Flask с использованием языка программирования Python и модели ChatGPT от OpenAI.</p>
+        <p>Автор: HEXO </p>
+    </div>
+</div>
+
+<script>
+    // JavaScript для отправки запроса к серверу Flask и обработки ответа от ChatGPT
+    document.getElementById("chatForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Предотвратить отправку формы по умолчанию
+
+        var formData = new FormData(this); // Получить данные формы
+        var xhr = new XMLHttpRequest(); // Создать новый XMLHttpRequest объект
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    document.getElementById("response").innerHTML = "<p><strong>Ответ:</strong> " + xhr.responseText + "</p>"; // Отобразить ответ на странице
+                } else {
+                    console.error("Произошла ошибка при отправке запроса к серверу.");
+                }
+            }
+        };
+
+        xhr.open("POST", "/get_response"); // Указать метод и URL для отправки запроса к серверу Flask
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Установить заголовок Content-Type
+        xhr.send(new URLSearchParams(formData).toString()); // Отправить запрос с данными формы
+    });
+</script>
+
+</body>
+</html>
